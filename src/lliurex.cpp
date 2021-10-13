@@ -17,21 +17,64 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <n4d.hpp>
+
 #include <nss.h>
 
 #include <iostream>
+#include <string>
 #include <mutex>
 
+using namespace edupals;
 using namespace std;
+
+struct Group
+{
+    std::string name;
+    uint64_t gid;
+    std::vector<std::string> members;
+};
+
+std::mutex mtx;
+std::vector<Group> groups;
+int index = -1;
 
 /*
  * Open database
 */
 enum nss_status _nss_lliurex_setgrent(int stayopen)
 {
-    enum nss_status ret;
+    std::lock_guard<std::mutex> lock(mtx);
     
-    return ret;
+    index = -1;
+    
+    n4d::Client client;
+    
+    try {
+        variant::Variant ret = client.call("CDC","getgrall");
+        
+        groups.clear();
+        
+        for (string key : ret.keys()) {
+            Group grp;
+            
+            grp.name = key;
+            grp.gid = ret[key][0];
+            
+            for (size_t n=0;n<ret[key][1].count();n++) {
+                grp.members.push_back(ret[key][1][n].get_string());
+            }
+            
+            groups.push_back(grp);
+        }
+    }
+    catch (std::exception& e) {
+        return NSS_STATUS_UNAVAIL;
+    }
+    
+    index = 0;
+    
+    return NSS_STATUS_SUCCESS;
 }
 
 /*
@@ -39,9 +82,7 @@ enum nss_status _nss_lliurex_setgrent(int stayopen)
 */
 enum nss_status _nss_lliurex_endgrent()
 {
-    enum nss_status ret;
-    
-    return ret;
+    return NSS_STATUS_SUCCESS;
 }
 
 /*
