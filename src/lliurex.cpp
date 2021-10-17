@@ -33,6 +33,13 @@
 using namespace edupals;
 using namespace std;
 
+extern "C" enum nss_status _nss_lliurex_setgrent(void);
+extern "C" enum nss_status _nss_lliurex_endgrent(void);
+extern "C" enum nss_status _nss_lliurex_getgrent_r(struct group* result, char* buffer, size_t buflen, int* errnop);
+extern "C" enum nss_status _nss_lliurex_getgrgid_r(gid_t gid, struct group* result, char* buffer, size_t buflen, int* errnop);
+extern "C" enum nss_status _nss_lliurex_getgrnam_r(const char* name, struct group* result, char *buffer, size_t buflen, int* errnop);
+
+
 namespace lliurex
 {
     struct Group
@@ -114,7 +121,8 @@ static int update_db()
             lliurex::Group grp;
             
             grp.name = key;
-            grp.gid = (uint64_t)ret[key][0].get_int64();
+            grp.gid = (uint64_t)ret[key][0].to_int64();
+            sd_journal_print(LOG_INFO,"group:(%ld) %s",grp.gid,key.c_str());
             
             for (size_t n=0;n<ret[key][1].count();n++) {
                 grp.members.push_back(ret[key][1][n].get_string());
@@ -134,16 +142,10 @@ static int update_db()
 /*
  * Open database
 */
-extern "C" enum nss_status _nss_lliurex_setgrent(int stayopen)
+enum nss_status _nss_lliurex_setgrent(void)
 {
     std::lock_guard<std::mutex> lock(lliurex::mtx);
     sd_journal_print(LOG_INFO,"lliurex_setgrent...");
-    
-    fstream ftmp;
-    
-    ftmp.open ("/tmp/libnss_lliurex.log", std::fstream::out);
-    ftmp<<"lliurex_setgrent\n";
-    ftmp.close();
     
     lliurex::index = -1;
     
@@ -160,7 +162,7 @@ extern "C" enum nss_status _nss_lliurex_setgrent(int stayopen)
 /*
  * Close database
 */
-extern "C" enum nss_status _nss_lliurex_endgrent()
+enum nss_status _nss_lliurex_endgrent()
 {
     sd_journal_print(LOG_INFO,"lliurex_endgrent");
     return NSS_STATUS_SUCCESS;
@@ -169,7 +171,7 @@ extern "C" enum nss_status _nss_lliurex_endgrent()
 /*
  * Read group entry
 */
-extern "C" enum nss_status _nss_lliurex_getgrent_r(struct group* result, char* buffer, size_t buflen, int* errnop)
+enum nss_status _nss_lliurex_getgrent_r(struct group* result, char* buffer, size_t buflen, int* errnop)
 {
     std::lock_guard<std::mutex> lock(lliurex::mtx);
     sd_journal_print(LOG_INFO,"lliurex_getgrent %d",lliurex::index);
@@ -194,7 +196,7 @@ extern "C" enum nss_status _nss_lliurex_getgrent_r(struct group* result, char* b
 /*
  * Find group entry by GID
 */
-extern "C" enum nss_status _nss_lliurex_getgrgid_r(gid_t gid, struct group* result, char* buffer, size_t buflen, int* errnop)
+enum nss_status _nss_lliurex_getgrgid_r(gid_t gid, struct group* result, char* buffer, size_t buflen, int* errnop)
 {
     std::lock_guard<std::mutex> lock(lliurex::mtx);
     sd_journal_print(LOG_INFO,"lliurex_getgrgid %d",gid);
@@ -226,7 +228,7 @@ extern "C" enum nss_status _nss_lliurex_getgrgid_r(gid_t gid, struct group* resu
 /*
  * Find group entry by name
 */
-extern "C" enum nss_status _nss_lliurex_getgrnam_r(const char* name, struct group* result, char *buffer, size_t buflen, int* errnop)
+enum nss_status _nss_lliurex_getgrnam_r(const char* name, struct group* result, char *buffer, size_t buflen, int* errnop)
 {
     std::lock_guard<std::mutex> lock(lliurex::mtx);
     
