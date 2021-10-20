@@ -1,0 +1,15 @@
+Source: libnss-lliurex
+Section: libs
+Priority: optional
+Maintainer: Enrique Medina Gremaldos <quiqueiii@gmail.com>
+Build-Depends: debhelper (>=9), cmake, make, g++, pkg-config, libedupals-base2 (>=2.1), libedupals-base-dev (>=2.1), libedupals-n4d2 (>=2.4), libedupals-n4d-dev (>=2.4), extra-cmake-modules, libsystemd-dev
+Standards-Version: 4.5.0
+Homepage: https://github.com/lliurex/libnss-lliurex
+
+Package: libnss-lliurex
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: lliurex nss plugin
+ This nss plugin is designed to add teacher/student groups from lliurex classrooms 
+
+
