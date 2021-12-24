@@ -1,3 +1,10 @@
+libnss-lliurex (1.0.1.0) focal; urgency=medium
+
+  * Fixed bug copying strings to getent
+  * Using a 2.0 second cache. Only working on a process life time due the way nss works.
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Fri, 24 Dec 2021 17:08:47 +0100
+
 libnss-lliurex (1.0.0.0) focal; urgency=medium
 
   * Initial release.
