@@ -29,6 +29,7 @@
 #include <string>
 #include <cstring>
 #include <mutex>
+#include <chrono>
 
 using namespace edupals;
 using namespace std;
@@ -38,7 +39,6 @@ extern "C" enum nss_status _nss_lliurex_endgrent(void);
 extern "C" enum nss_status _nss_lliurex_getgrent_r(struct group* result, char* buffer, size_t buflen, int* errnop);
 extern "C" enum nss_status _nss_lliurex_getgrgid_r(gid_t gid, struct group* result, char* buffer, size_t buflen, int* errnop);
 extern "C" enum nss_status _nss_lliurex_getgrnam_r(const char* name, struct group* result, char *buffer, size_t buflen, int* errnop);
-
 
 namespace lliurex
 {
@@ -52,7 +52,7 @@ namespace lliurex
     std::mutex mtx;
     std::vector<lliurex::Group> groups;
     int index = -1;
-
+    std::chrono::time_point<std::chrono::steady_clock> timestamp;
 }
 
 static int push_string(string in,char** buffer, size_t* remain)
@@ -76,18 +76,19 @@ static int push_group(lliurex::Group& source, struct group* result, char* buffer
     
     result->gr_gid = source.gid;
     
+    result->gr_name = ptr;
     if (push_string(source.name,&ptr,&buflen) == -1) {
         return -1;
     }
     
-    result->gr_name = ptr;
     vector<char*> tmp;
     
     for (string member : source.members) {
+        char* q = ptr;
         if (push_string(member,&ptr,&buflen) == -1) {
             return -1;
         }
-        tmp.push_back(ptr);
+        tmp.push_back(q);
     }
     
     if ( (sizeof(char*)*(tmp.size()+1)) > buflen) {
@@ -107,10 +108,20 @@ static int push_group(lliurex::Group& source, struct group* result, char* buffer
     return 0;
 }
 
-
-static int update_db()
+int update_db()
 {
+    std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
+    
     n4d::Client client;
+    
+    double delta = std::chrono::duration_cast<std::chrono::seconds>(now - lliurex::timestamp).count();
+    
+    if (delta < 2.0) {
+        sd_journal_print(LOG_INFO,"cached result: %f seconds",delta);
+        return 0;
+    }
+    
+    lliurex::timestamp = now;
     
     try {
         variant::Variant ret = client.call("CDC","getgrall");
@@ -199,6 +210,7 @@ enum nss_status _nss_lliurex_getgrent_r(struct group* result, char* buffer, size
 enum nss_status _nss_lliurex_getgrgid_r(gid_t gid, struct group* result, char* buffer, size_t buflen, int* errnop)
 {
     std::lock_guard<std::mutex> lock(lliurex::mtx);
+    
     sd_journal_print(LOG_INFO,"lliurex_getgrgid %d",gid);
     
     int db_status = update_db();
