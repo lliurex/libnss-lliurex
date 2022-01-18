@@ -77,6 +77,8 @@ static int push_group(lliurex::Group& source, struct group* result, char* buffer
     result->gr_gid = source.gid;
     
     result->gr_name = ptr;
+    result->gr_passwd = 0;
+    
     if (push_string(source.name,&ptr,&buflen) == -1) {
         return -1;
     }
