@@ -1,3 +1,9 @@
+libnss-lliurex (1.0.2.0) focal; urgency=medium
+
+  * Fix empty password field causing random segfaults
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 18 Jan 2022 11:42:57 +0100
+
 libnss-lliurex (1.0.1.0) focal; urgency=medium
 
   * Fixed bug copying strings to getent
