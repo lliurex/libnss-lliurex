@@ -114,7 +114,7 @@ int update_db()
 {
     std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
     
-    n4d::Client client();
+    n4d::Client client;
     
     double delta = std::chrono::duration_cast<std::chrono::seconds>(now - lliurex::timestamp).count();
     
