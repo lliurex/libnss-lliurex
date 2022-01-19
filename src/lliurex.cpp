@@ -97,7 +97,7 @@ static int push_group(lliurex::Group& source, struct group* result, char* buffer
         return -1;
     }
     
-    result->gr_mem = &ptr;
+    result->gr_mem = (char**) ptr;
     
     int n = 0;
     
@@ -114,7 +114,7 @@ int update_db()
 {
     std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
     
-    n4d::Client client;
+    n4d::Client client();
     
     double delta = std::chrono::duration_cast<std::chrono::seconds>(now - lliurex::timestamp).count();
     
@@ -158,7 +158,7 @@ int update_db()
 enum nss_status _nss_lliurex_setgrent(void)
 {
     std::lock_guard<std::mutex> lock(lliurex::mtx);
-    sd_journal_print(LOG_INFO,"lliurex_setgrent...");
+    sd_journal_print(LOG_INFO,"lliurex_setgrent()");
     
     lliurex::index = -1;
     
@@ -177,7 +177,7 @@ enum nss_status _nss_lliurex_setgrent(void)
 */
 enum nss_status _nss_lliurex_endgrent()
 {
-    sd_journal_print(LOG_INFO,"lliurex_endgrent");
+    sd_journal_print(LOG_INFO,"lliurex_endgrent()");
     return NSS_STATUS_SUCCESS;
 }
 
