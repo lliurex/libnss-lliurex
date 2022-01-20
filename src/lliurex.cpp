@@ -17,6 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "http.hpp"
+
 #include <n4d.hpp>
 
 #include <nss.h>
@@ -31,6 +33,7 @@
 #include <mutex>
 #include <chrono>
 
+using namespace lliurex::nss;
 using namespace edupals;
 using namespace std;
 
