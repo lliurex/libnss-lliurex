@@ -17,7 +17,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <n4d.hpp>
+#include "http.hpp"
+
+#include <variant.hpp>
+#include <json.hpp>
 
 #include <nss.h>
 #include <systemd/sd-journal.h>
@@ -31,7 +34,9 @@
 #include <mutex>
 #include <chrono>
 
+using namespace lliurex::nss;
 using namespace edupals;
+using namespace edupals::variant;
 using namespace std;
 
 extern "C" enum nss_status _nss_lliurex_setgrent(void);
@@ -114,7 +119,24 @@ int update_db()
 {
     std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
     
-    n4d::Client client;
+    string address = "http://127.0.0.1:9797";
+    
+    try {
+        fstream fb;
+        fb.open("/etc/libnss_lliurex.conf",ios::in);
+        
+        if (fb.is_open()) {
+            Variant cfg = json::load(fb);
+            Variant server = cfg / "server" / Type::String;
+            address = server.get_string();
+            fb.close();
+        }
+    }
+    catch (std::exception& e) {
+        sd_journal_print(LOG_ERR,"failed to read /etc/libnss_lliurex.conf");
+    }
+    
+    HttpClient client(address);
     
     double delta = std::chrono::duration_cast<std::chrono::seconds>(now - lliurex::timestamp).count();
     
@@ -126,7 +148,7 @@ int update_db()
     lliurex::timestamp = now;
     
     try {
-        variant::Variant ret = client.call("CDC","getgrall");
+        variant::Variant ret = client.request("getgrall");
         
         lliurex::groups.clear();
         
