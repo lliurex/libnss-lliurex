@@ -25,6 +25,7 @@
 
 #include <exception>
 #include <sstream>
+#include <iostream>
 
 using namespace lliurex::nss;
 
@@ -33,8 +34,9 @@ using namespace edupals::variant;
 
 using namespace std;
 
-HttpClient::HttpClient(string url)
+HttpClient::HttpClient(string url) : server(url)
 {
+    
 }
 
 size_t response_cb(char *ptr, size_t size, size_t nmemb, void *userdata)
