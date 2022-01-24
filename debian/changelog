@@ -1,3 +1,9 @@
+libnss-lliurex (21.0.0.0) focal; urgency=medium
+
+  * Using a raw http access to group database instead of a n4d based
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Mon, 24 Jan 2022 13:53:41 +0100
+
 libnss-lliurex (1.0.4.0) focal; urgency=medium
 
   * minor fix
