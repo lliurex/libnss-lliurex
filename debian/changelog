@@ -1,3 +1,9 @@
+libnss-lliurex (21.0.1.0) focal; urgency=medium
+
+  * Added a 2s timeout
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Fri, 04 Feb 2022 12:33:39 +0100
+
 libnss-lliurex (21.0.0.0) focal; urgency=medium
 
   * Using a raw http access to group database instead of a n4d based
