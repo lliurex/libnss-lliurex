@@ -73,6 +73,9 @@ Variant HttpClient::request(string what)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_URL, address.c_str());
     
+    /* two seconds timeout */
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2L);
+    
     curl_easy_setopt(curl, CURLOPT_WRITEDATA,&input);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,response_cb);
     
