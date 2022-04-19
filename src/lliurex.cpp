@@ -212,7 +212,6 @@ enum nss_status _nss_lliurex_getgrent_r(struct group* result, char* buffer, size
     sd_journal_print(LOG_INFO,"lliurex_getgrent %d",lliurex::index);
     
     if (lliurex::index == lliurex::groups.size()) {
-        *errnop = ENOENT;
         return NSS_STATUS_NOTFOUND;
     }
     
