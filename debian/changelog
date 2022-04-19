@@ -1,3 +1,9 @@
+libnss-lliurex (21.0.2.0) focal; urgency=medium
+
+  * Not setting errno to ENOENT when getgrent arrives to end
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 19 Apr 2022 14:10:26 +0200
+
 libnss-lliurex (21.0.1.0) focal; urgency=medium
 
   * Added a 2s timeout
