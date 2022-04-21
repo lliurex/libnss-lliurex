@@ -1,3 +1,9 @@
+libnss-lliurex (21.1.0.0) focal; urgency=medium
+
+  * Syslog messages are now restricted, set debug = true on conf file to enable them again
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Thu, 21 Apr 2022 10:52:26 +0200
+
 libnss-lliurex (21.0.2.0) focal; urgency=medium
 
   * Not setting errno to ENOENT when getgrent arrives to end
