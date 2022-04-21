@@ -58,6 +58,8 @@ namespace lliurex
     std::vector<lliurex::Group> groups;
     int index = -1;
     std::chrono::time_point<std::chrono::steady_clock> timestamp;
+
+    bool debug = false;
 }
 
 static int push_string(string in,char** buffer, size_t* remain)
@@ -127,13 +129,21 @@ int update_db()
         
         if (fb.is_open()) {
             Variant cfg = json::load(fb);
+
+            // mandatory key
             Variant server = cfg / "server" / Type::String;
             address = server.get_string();
+
+            Variant dbgf = cfg.find("debug");
+            if (dbgf.is_boolean()) {
+                lliurex::debug = dbgf;
+            }
             fb.close();
         }
     }
     catch (std::exception& e) {
         sd_journal_print(LOG_ERR,"failed to read /etc/libnss_lliurex.conf");
+        sd_journal_print(LOG_ERR,e.what());
     }
     
     HttpClient client(address);
@@ -141,7 +151,9 @@ int update_db()
     double delta = std::chrono::duration_cast<std::chrono::seconds>(now - lliurex::timestamp).count();
     
     if (delta < 2.0) {
-        sd_journal_print(LOG_INFO,"cached result: %f seconds",delta);
+        if (lliurex::debug) {
+            sd_journal_print(LOG_DEBUG,"cached result: %f seconds",delta);
+        }
         return 0;
     }
     
@@ -157,7 +169,10 @@ int update_db()
             
             grp.name = key;
             grp.gid = (uint64_t)ret[key][0].to_int64();
-            sd_journal_print(LOG_INFO,"group:(%ld) %s",grp.gid,key.c_str());
+
+            if (lliurex::debug) {
+                sd_journal_print(LOG_DEBUG,"group:(%ld) %s",grp.gid,key.c_str());
+            }
             
             for (size_t n=0;n<ret[key][1].count();n++) {
                 grp.members.push_back(ret[key][1][n].get_string());
@@ -180,7 +195,10 @@ int update_db()
 enum nss_status _nss_lliurex_setgrent(void)
 {
     std::lock_guard<std::mutex> lock(lliurex::mtx);
-    sd_journal_print(LOG_INFO,"lliurex_setgrent()");
+
+    if (lliurex::debug) {
+        sd_journal_print(LOG_DEBUG,"lliurex_setgrent()");
+    }
     
     lliurex::index = -1;
     
@@ -190,7 +208,9 @@ enum nss_status _nss_lliurex_setgrent(void)
     }
     
     lliurex::index = 0;
-    sd_journal_print(LOG_INFO,"lliurex_setgrent successful");
+    if (lliurex::debug) {
+        sd_journal_print(LOG_DEBUG,"lliurex_setgrent successful");
+    }
     return NSS_STATUS_SUCCESS;
 }
 
@@ -199,7 +219,9 @@ enum nss_status _nss_lliurex_setgrent(void)
 */
 enum nss_status _nss_lliurex_endgrent()
 {
-    sd_journal_print(LOG_INFO,"lliurex_endgrent()");
+    if (lliurex::debug) {
+        sd_journal_print(LOG_DEBUG,"lliurex_endgrent()");
+    }
     return NSS_STATUS_SUCCESS;
 }
 
@@ -209,7 +231,10 @@ enum nss_status _nss_lliurex_endgrent()
 enum nss_status _nss_lliurex_getgrent_r(struct group* result, char* buffer, size_t buflen, int* errnop)
 {
     std::lock_guard<std::mutex> lock(lliurex::mtx);
-    sd_journal_print(LOG_INFO,"lliurex_getgrent %d",lliurex::index);
+
+    if (lliurex::debug) {
+        sd_journal_print(LOG_DEBUG,"lliurex_getgrent %d",lliurex::index);
+    }
     
     if (lliurex::index == lliurex::groups.size()) {
         return NSS_STATUS_NOTFOUND;
@@ -234,7 +259,9 @@ enum nss_status _nss_lliurex_getgrgid_r(gid_t gid, struct group* result, char* b
 {
     std::lock_guard<std::mutex> lock(lliurex::mtx);
     
-    sd_journal_print(LOG_INFO,"lliurex_getgrgid %d",gid);
+    if (lliurex::debug) {
+        sd_journal_print(LOG_DEBUG,"lliurex_getgrgid %d",gid);
+    }
     
     int db_status = update_db();
     if (db_status == -1) {
@@ -244,7 +271,11 @@ enum nss_status _nss_lliurex_getgrgid_r(gid_t gid, struct group* result, char* b
     
     for (lliurex::Group& grp : lliurex::groups) {
         if (grp.gid==gid) {
-            sd_journal_print(LOG_INFO,"lliurex_getgrgid found!");
+
+            if (lliurex::debug) {
+                sd_journal_print(LOG_DEBUG,"lliurex_getgrgid found!");
+            }
+
             int status = push_group(grp,result,buffer,buflen);
             if (status == -1) {
                 *errnop = ERANGE;
@@ -267,8 +298,10 @@ enum nss_status _nss_lliurex_getgrnam_r(const char* name, struct group* result, 
 {
     std::lock_guard<std::mutex> lock(lliurex::mtx);
     
-    sd_journal_print(LOG_INFO,"lliurex_getgrnam %s",name);
-    
+    if (lliurex::debug) {
+        sd_journal_print(LOG_DEBUG,"lliurex_getgrnam %s",name);
+    }
+
     int db_status = update_db();
     if (db_status == -1) {
         *errnop = ENOENT;
@@ -277,7 +310,11 @@ enum nss_status _nss_lliurex_getgrnam_r(const char* name, struct group* result, 
     
     for (lliurex::Group& grp : lliurex::groups) {
         if (grp.name==std::string(name)) {
-            sd_journal_print(LOG_INFO,"lliurex_getgrnam found!");
+
+            if (lliurex::debug) {
+                sd_journal_print(LOG_DEBUG,"lliurex_getgrnam found!");
+            }
+
             int status = push_group(grp,result,buffer,buflen);
             if (status == -1) {
                 *errnop = ERANGE;
