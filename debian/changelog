@@ -1,3 +1,9 @@
+libnss-lliurex (21.1.0.0~lliurex1) bionic; urgency=medium
+
+  * Backport to Bionic
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Mon, 30 May 2022 18:03:17 +0200
+
 libnss-lliurex (21.1.0.0) focal; urgency=medium
 
   * Syslog messages are now restricted, set debug = true on conf file to enable them again
