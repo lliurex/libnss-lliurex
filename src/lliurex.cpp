@@ -135,7 +135,7 @@ int update_db()
             address = server.get_string();
 
             Variant dbgf = cfg.find("debug");
-            if (dbgf.is_boolean()) {
+            if (dbgf.type() == variant::Type::Boolean) {
                 lliurex::debug = dbgf;
             }
             fb.close();
@@ -168,7 +168,19 @@ int update_db()
             lliurex::Group grp;
             
             grp.name = key;
-            grp.gid = (uint64_t)ret[key][0].to_int64();
+            variant::Variant tmp = ret[key][0];
+
+            if (tmp.type() == variant::Type::Int32) {
+                grp.gid = tmp.get_int32();
+            }
+            else {
+                if (tmp.type() == variant::Type::Int64) {
+                    grp.gid = tmp.get_int32();
+                }
+                else {
+                    sd_journal_print(LOG_ERR,"Unexpected grp format");
+                }
+            }
 
             if (lliurex::debug) {
                 sd_journal_print(LOG_DEBUG,"group:(%ld) %s",grp.gid,key.c_str());
