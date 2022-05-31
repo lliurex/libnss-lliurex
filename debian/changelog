@@ -1,3 +1,9 @@
+libnss-lliurex (21.1.1.0~lliurex1) bionic; urgency=medium
+
+  * Using libedupals 2.0 compatible API
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 31 May 2022 12:59:31 +0200
+
 libnss-lliurex (21.1.0.0~lliurex1) bionic; urgency=medium
 
   * Backport to Bionic

@@ -2,7 +2,7 @@ Source: libnss-lliurex
 Section: libs
 Priority: optional
 Maintainer: Enrique Medina Gremaldos <quiqueiii@gmail.com>
-Build-Depends: debhelper (>=9), cmake, make, g++, pkg-config, libedupals-base2 (>=2.1), libedupals-base-dev (>=2.1),  extra-cmake-modules, libsystemd-dev, libcurl4-openssl-dev
+Build-Depends: debhelper (>=9), cmake, make, g++, pkg-config, libedupals-base2 (>=2.0), libedupals-base-dev (>=2.0),  extra-cmake-modules, libsystemd-dev, libcurl4-openssl-dev
 Standards-Version: 4.5.0
 Homepage: https://github.com/lliurex/libnss-lliurex
 
