@@ -84,12 +84,17 @@ static int push_group(lliurex::Group& source, struct group* result, char* buffer
     result->gr_gid = source.gid;
     
     result->gr_name = ptr;
-    result->gr_passwd = 0;
-    
+
     if (push_string(source.name,&ptr,&buflen) == -1) {
         return -1;
     }
     
+    result->gr_passwd = ptr;
+
+    if (push_string("x",&ptr,&buflen) == -1) {
+        return -1;
+    }
+
     vector<char*> tmp;
     
     for (string member : source.members) {
