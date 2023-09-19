@@ -1,0 +1,66 @@
+libnss-lliurex (21.1.2.0) focal; urgency=medium
+
+  * Using a 'x' as group password. NULL passwords segfaults at glibc grp-merge
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 17 Jan 2023 21:57:41 +0100
+
+libnss-lliurex (21.1.1.0) focal; urgency=medium
+
+  * Using libedupals 2.0 compatible API
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 31 May 2022 12:54:39 +0200
+
+libnss-lliurex (21.1.0.0) focal; urgency=medium
+
+  * Syslog messages are now restricted, set debug = true on conf file to enable them again
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Thu, 21 Apr 2022 10:52:26 +0200
+
+libnss-lliurex (21.0.2.0) focal; urgency=medium
+
+  * Not setting errno to ENOENT when getgrent arrives to end
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 19 Apr 2022 14:10:26 +0200
+
+libnss-lliurex (21.0.1.0) focal; urgency=medium
+
+  * Added a 2s timeout
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Fri, 04 Feb 2022 12:33:39 +0100
+
+libnss-lliurex (21.0.0.0) focal; urgency=medium
+
+  * Using a raw http access to group database instead of a n4d based
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Mon, 24 Jan 2022 13:53:41 +0100
+
+libnss-lliurex (1.0.4.0) focal; urgency=medium
+
+  * minor fix
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Wed, 19 Jan 2022 10:50:15 +0100
+
+libnss-lliurex (1.0.3.0) focal; urgency=medium
+
+  * Fix stack smashing
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Wed, 19 Jan 2022 10:44:05 +0100
+
+libnss-lliurex (1.0.2.0) focal; urgency=medium
+
+  * Fix empty password field causing random segfaults
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 18 Jan 2022 11:42:57 +0100
+
+libnss-lliurex (1.0.1.0) focal; urgency=medium
+
+  * Fixed bug copying strings to getent
+  * Using a 2.0 second cache. Only working on a process life time due the way nss works.
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Fri, 24 Dec 2021 17:08:47 +0100
+
+libnss-lliurex (1.0.0.0) focal; urgency=medium
+
+  * Initial release.
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Wed, 20 Oct 2021 13:21:23 +0200
